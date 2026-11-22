@@ -1,6 +1,7 @@
 """Async orchestration over an injected LLM provider."""
 import asyncio
 import json
+import logging
 from collections.abc import Sequence
 
 from agent_runtime.execution.context import AgentContext
@@ -40,4 +41,12 @@ class AgentOrchestrator:
             *(self.run(context, session, prompt, model=model) for context, session, prompt in tasks),
             return_exceptions=True,
         )
+        logger = logging.getLogger("agent_runtime.execution")
+        for (context, _session, _prompt), result in zip(tasks, results):
+            if isinstance(result, BaseException):
+                logger.error(
+                    "Agent execution failed; other agents remain isolated: %s",
+                    context.agent.config.id,
+                    exc_info=(type(result), result, result.__traceback__),
+                )
         return list(results)
