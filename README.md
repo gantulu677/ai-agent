@@ -2,19 +2,14 @@
 
 Repository ini menampung beberapa AI Agent yang dikelola sebagai unit independen. Setiap agent memiliki konfigurasi, instruksi, dan skill sendiri di dalam foldernya.
 
-## Prinsip utama
+## Prinsip arsitektur
 
 - Setiap AI Agent berada di direktori tersendiri di bawah `agents/`.
 - Setiap agent memiliki `agent.json` sebagai konfigurasi individual.
-- Agent ditemukan otomatis melalui keberadaan `agent.json` pada folder agent.
-- Instruksi agent disimpan sebagai file Markdown yang dikelompokkan berdasarkan kategori.
-- `agent.json` mencantumkan file instruksi yang dimuat serta strategi/prioritas pemuatannya.
-- Skill hanya dimiliki oleh agent di dalam folder agent tersebut; tidak ada shared-skill repository.
-- Skill ditemukan otomatis melalui keberadaan `SKILL.md` di direktori skill.
-- Setiap skill menggunakan `skill.json` untuk metadata/konfigurasi dan `SKILL.md` untuk instruksi.
-- Folder pendukung skill seperti `references/`, `scripts/`, dan `assets/` bersifat opsional.
-- Schema bersama berada di `schemas/` untuk validasi; schema bukan dependency runtime antar-agent.
-- Kegagalan satu agent diisolasi dari agent lain, tetapi tetap dapat dicatat dalam laporan validasi repository.
+- Agent ditemukan otomatis melalui keberadaan `agent.json` pada direktori langsung di bawah `agents/`.
+- Setiap agent memiliki instruksi dan skill sendiri; tidak ada shared skill, dependency runtime, atau komunikasi antar-agent yang diwajibkan.
+- Schema di root repository digunakan untuk validasi bersama, bukan sebagai dependency runtime antar-agent.
+- Kegagalan satu agent diisolasi dari agent lain.
 - Setiap agent memiliki versioning independen.
 
 ## Struktur repository
@@ -42,60 +37,91 @@ ai-agent/
     └── skill.schema.json
 ```
 
-Direktori dan kategori di atas menunjukkan pola yang direkomendasikan. Tidak semua kategori instruksi atau direktori pendukung skill wajib ada pada setiap agent.
+Struktur di atas merupakan pola. Kategori instruksi dan direktori pendukung skill tidak wajib seluruhnya ada pada setiap agent.
 
-## Agent discovery
+## Agent discovery and configuration
 
-Sistem discovery memindai subdirektori langsung di dalam `agents/`. Sebuah direktori dikenali sebagai agent jika memiliki file `agent.json`.
+Sistem memindai subdirektori langsung di dalam `agents/`. Direktori dikenali sebagai agent jika memiliki `agent.json`.
 
-Contoh:
+Hanya dua field yang wajib pada `agent.json`:
 
-- `agents/research-agent/agent.json` → kandidat agent yang ditemukan.
-- Direktori tanpa `agent.json` → bukan agent terdaftar.
+| Field | Ketentuan |
+|---|---|
+| `id` | Identitas agent; string non-kosong |
+| `version` | Versi agent; string non-kosong |
 
-Setiap `agent.json` menyimpan metadata, konfigurasi operasional, versi agent, serta daftar file instruksi yang perlu dimuat.
+Field lain bersifat opsional dan dapat disesuaikan. Konfigurasi dapat memuat pengaturan operasional dan urutan kategori instruksi. Field tambahan tidak boleh menyebabkan konfigurasi ditolak hanya karena belum dikenal oleh schema.
 
-## Instruction organization
+Setiap agent mengelola versinya secara independen. Perubahan pada agent A tidak mengharuskan perubahan versi agent B. Format versi MAJOR.MINOR.PATCH merupakan rekomendasi awal, bukan aturan final yang telah ditetapkan.
 
-Instruksi dikelompokkan berdasarkan tanggung jawab. Kategori default:
+## Instruction discovery and loading
 
-| Urutan default | Kategori | Cakupan |
+Instruksi disimpan sebagai file Markdown (`.md`) di dalam folder kategori pada `instructions/`. Semua file Markdown dalam folder kategori instruksi ditemukan dan dimuat otomatis; file tidak perlu didaftarkan satu per satu di `agent.json`.
+
+Kategori default dan urutan pemuatan:
+
+| Urutan | Kategori | Cakupan |
 |---:|---|---|
 | 1 | `core` | Identitas dan tanggung jawab |
 | 2 | `behavior` | Prinsip, perilaku, dan batasan |
 | 3 | `workflow` | Prosedur dan alur kerja |
 | 4 | `response` | Format dan gaya respons |
 
-Urutan default dapat disesuaikan melalui konfigurasi agent. File instruksi yang dimuat harus tercantum dalam `agent.json`. Detail format konfigurasi dan aturan konflik instruksi masih menunggu spesifikasi lanjutan.
+Urutan kategori default dapat disesuaikan melalui konfigurasi agent.
+
+Di dalam kategori yang sama, urutan file menggunakan pendekatan hybrid:
+1. Numeric prefix pada nama file menjadi mekanisme urutan default, misalnya `01-identity.md`, `02-purpose.md`, dan `03-constraints.md`.
+2. Metadata prioritas dalam YAML frontmatter dapat menjadi override terhadap urutan default tersebut.
+
+Contoh bentuk frontmatter (ilustratif):
+
+```yaml
+---
+# metadata prioritas instruksi
+---
+```
+
+Nama field metadata, tipe/nilai prioritas, aturan pengurutan, dan perilaku untuk file tanpa numeric prefix masih memerlukan spesifikasi lanjutan. File non-Markdown tidak dimuat sebagai instruksi.
 
 ## Skill discovery and structure
 
-Sistem discovery memindai subdirektori di dalam folder `skills/` milik masing-masing agent. Direktori skill dikenali melalui keberadaan `SKILL.md`.
+Setiap agent memiliki direktori `skills/` sendiri. Semua subdirektori skill di dalamnya menjadi milik agent tersebut secara otomatis; tidak diperlukan pendaftaran skill di `agent.json`.
+
+Sebuah direktori dikenali sebagai skill jika memiliki `SKILL.md`. Skill tidak dibagikan lintas-agent.
 
 Setiap skill memiliki:
 
-- `skill.json`: metadata dan konfigurasi skill.
-- `SKILL.md`: instruksi penggunaan/pelaksanaan skill.
-- `references/`, `scripts/`, dan `assets/`: sumber daya modular opsional.
+| File/direktori | Ketentuan |
+|---|---|
+| `skill.json` | Metadata dan konfigurasi skill |
+| `SKILL.md` | Instruksi skill; wajib untuk discovery |
+| `references/` | Resource pendukung opsional |
+| `scripts/` | Script pendukung opsional |
+| `assets/` | Asset pendukung opsional |
 
-Tidak ada registry skill pusat dan tidak ada pemakaian skill lintas-agent yang ditetapkan dalam arsitektur ini.
+Empat field yang wajib dalam `skill.json`:
 
-## Shared schemas and validation
+| Field | Ketentuan |
+|---|---|
+| `id` | Identitas skill; string non-kosong |
+| `name` | Nama skill; string non-kosong |
+| `description` | Deskripsi skill; string non-kosong |
+| `version` | Versi skill; string non-kosong |
 
-Direktori `schemas/` menampung schema bersama untuk memvalidasi konfigurasi agent dan skill. Schema berfungsi sebagai standar validasi repository, bukan sebagai hubungan atau dependency runtime antar-agent.
+Field tambahan diperbolehkan. Skill memiliki metadata versi sendiri; aturan versioning skill yang lebih rinci belum ditetapkan.
 
-Strategi validasi yang disepakati bersifat hybrid:
+## Validation and failure isolation
 
-- Kesalahan kritis menolak konfigurasi terkait.
+Validasi menggunakan pendekatan hybrid:
+
+- Kesalahan kritis menolak konfigurasi yang bermasalah.
 - Masalah nonkritis menghasilkan warning.
-- Hasil validasi dan error tiap agent dicatat secara individual; kegagalan satu agent tidak menghentikan agent lain.
+- Detail error dan warning harus dapat diketahui.
+- Hasil validasi dicatat per agent dalam laporan validasi repository.
+- Kegagalan satu agent tidak menghentikan atau memengaruhi agent lain.
 
-Daftar field wajib, klasifikasi error/warning, dan schema JSON final belum ditetapkan.
+Schema JSON yang tersedia di `schemas/` menetapkan field wajib dan tipe dasarnya. Kebijakan klasifikasi critical/noncritical, format laporan, dan aturan validasi lanjutan masih memerlukan spesifikasi.
 
-## Versioning
+## Requirement status
 
-Setiap agent mengelola versinya sendiri melalui `agent.json`. Perubahan pada satu agent tidak mengharuskan perubahan versi agent lain. Format versi dan aturan kenaikan MAJOR/MINOR/PATCH masih menunggu spesifikasi.
-
-## Status spesifikasi
-
-Repository ini sedang dibangun berdasarkan Requirement Draft v1.1. Struktur dan prinsip yang sudah disetujui diterapkan terlebih dahulu. Detail schema, runtime, eksekusi skill, aturan discovery lanjutan, dan mekanisme pengujian akan ditetapkan melalui pengumpulan requirement berikutnya.
+README ini merangkum keputusan yang telah disetujui sampai **R-23**. Hal-hal yang belum diputuskan tidak dianggap sebagai requirement final. Pengumpulan requirement berikutnya akan memperjelas detail metadata prioritas frontmatter, aturan validasi, runtime, dan mekanisme pengujian.
