@@ -1,19 +1,21 @@
 """Apply category and per-file instruction ordering rules."""
-from pathlib import Path
-import re
 from typing import Iterable
+import re
 
 from agent_runtime.discovery.instructions import InstructionCandidate
 from agent_runtime.parsers.instructions import parse_instruction
 
-_NUMERIC_PREFIX = re.compile(r"^(\\d+)")
+_NUMERIC_PREFIX = re.compile(r"^(\d+)")
 DEFAULT_CATEGORY_ORDER = ("core", "behavior", "workflow", "response")
 
 
 def category_order(categories: Iterable[str], configured: list[str] | None = None) -> list[str]:
     preferred = list(configured) if configured is not None else list(DEFAULT_CATEGORY_ORDER)
     present = set(categories)
-    ordered = [name for name in preferred if name in present]
+    ordered = []
+    for name in preferred:
+        if name in present and name not in ordered:
+            ordered.append(name)
     ordered.extend(sorted(present.difference(ordered)))
     return ordered
 
