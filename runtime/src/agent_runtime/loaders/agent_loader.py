@@ -1,4 +1,5 @@
 """Load an agent's configuration and instructions."""
+from dataclasses import dataclass
 import json
 from pathlib import Path
 
