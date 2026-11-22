@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ai-agent-runtime"
+version = "0.1.0"
+description = "Python runtime foundation for independent AI agents."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Proprietary" }
+authors = [{ name = "AI Agent Repository Contributors" }]
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+agent-runtime = "agent_runtime.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "runtime/src"}
+
+[tool.setuptools.packages.find]
+where = ["runtime/src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["runtime/src"]
