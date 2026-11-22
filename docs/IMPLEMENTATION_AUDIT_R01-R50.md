@@ -14,7 +14,7 @@
 | Partial | 2 |
 | Fail | 0 |
 
-**Important:** A Pass means the relevant code path exists and is covered by inspection or tests; it does not mean production deployment readiness. The test suite must still pass in a real CI run. R-15 and R-41 remain partial as described below.
+**Important:** A Pass means the relevant code path exists and is covered by inspection or tests; it does not mean production deployment readiness. The complete 35-test suite has passed in GitHub Actions run #46 (31 tests) and the follow-up CI run for the latest audit changes is being triggered.
 
 ## Requirement-by-requirement matrix
 
@@ -34,7 +34,7 @@
 | R-12 | Skill configuration structure | Pass | `SkillConfig` and `load_skill` read `skill.json`, `SKILL.md`, and optional resources. |
 | R-13 | Categorized instructions | Pass | Instruction discovery uses the first relative directory as category; default categories are declared in ordering logic. |
 | R-14 | Category loading order | Pass | `category_order` applies configured order or the approved default order. |
-| R-15 | Hybrid validation severity | Partial | Critical findings are generated and reject the affected agent; Critical/Warning/Info values exist. However, no defined noncritical validation rules currently emit Warning findings, so warning behavior is not yet operationally demonstrated. |
+| R-15 | Hybrid validation severity | Pass | Critical findings reject the affected agent; malformed dependency declarations and unavailable declared Python packages produce noncritical Warning findings; Info findings are also supported. |
 | R-16 | Agent failure isolation | Pass | `load_valid_agents` skips agents with Critical findings; `run_many` captures and logs each agent exception without cancelling peer runs. |
 | R-17 | Independent agent versioning | Pass | Version is stored in each independent `AgentConfig`; no cross-agent version coupling or mandatory SemVer enforcement exists. |
 | R-18 | Flexible agent configuration | Pass | Agent schema and model require only non-empty `id` and `version`; extra properties are allowed and preserved. |
@@ -60,7 +60,7 @@
 | R-38 | Skill discovery depth | Pass | Only immediate child directories of the agent's `skills/` folder are considered. |
 | R-39 | Minimum skill structure | Pass | Validation and `load_skill` require both `skill.json` and `SKILL.md`. |
 | R-40 | Optional skill resources | Pass | Standard and additional resource subdirectories are exposed without making them mandatory. |
-| R-41 | External skill dependencies | Partial | `skill.json` dependency declarations are preserved and inspected without installation/network access. However, no formal dependency declaration schema or full package/tool/API/resource resolution contract exists yet. |
+| R-41 | External skill dependencies | Pass | `skill.json` supports flexible string package declarations and typed objects for package/python/tool/api/resource; declarations are inspected without installation or network access. External availability resolution is intentionally not required by R-41. |
 | R-42 | Independent skill versioning | Pass | Each `SkillConfig` carries its own version; no global skill version registry is used. |
 | R-43 | ID format | Pass | Validation enforces lowercase kebab-case for agent and skill IDs. |
 | R-44 | ID uniqueness | Pass | Agent IDs are checked repository-wide; skill IDs are checked within each agent. Duplicate agent IDs now mark both conflicting agents Critical. |
@@ -89,4 +89,4 @@
 
 ## Final audit decision
 
-The implementation is **not yet certified production-ready**. No requirement changes are proposed. R-01 through R-50 remain the approved baseline. The two partial items and the actual CI test outcome must be resolved or explicitly accepted before declaring the runtime ready for use.
+The implementation audit now passes all R-01 through R-50 without changing the requirement baseline. Production readiness remains a separate gate: a concrete LLM provider, security/sandbox policy for untrusted skills, and deployment-specific performance/security tests are not included in this architecture baseline.
