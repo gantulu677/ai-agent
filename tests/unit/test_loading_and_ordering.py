@@ -52,3 +52,15 @@ def test_loader_preserves_source_and_metadata(tmp_path: Path):
     loaded = load_instructions(tmp_path)
     assert loaded[0].source == "core/rule.md"
     assert loaded[0].metadata["priority"] == 2
+
+
+def test_null_priority_is_rejected_during_ordering(tmp_path: Path):
+    root = tmp_path / "instructions" / "core"
+    root.mkdir(parents=True)
+    (root / "rule.md").write_text("---\\npriority: null\\n---\\ncontent")
+    try:
+        order_instructions(discover_instructions(tmp_path))
+    except ValueError as exc:
+        assert "positive integer" in str(exc)
+    else:
+        raise AssertionError("null priority must not silently fall back to filename ordering")
