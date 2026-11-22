@@ -160,7 +160,7 @@ Schema JSON di `schemas/` menetapkan validasi dasar field wajib dan tipe data ko
 - **Dokumentasi:** README ini dan [REQUIREMENTS.md](REQUIREMENTS.md) mencerminkan keputusan final.
 - **Schema baseline:** `schemas/agent.schema.json` dan `schemas/skill.schema.json` tersedia untuk validasi dasar.
 
-**Batas implementasi:** dokumentasi dan schema tidak berarti runtime telah tersedia. Automatic discovery loader, instruction parser/loader, skill loader, runtime execution, dependency resolver, dan validation engine belum dinyatakan selesai atau teruji hanya berdasarkan dokumen ini.
+**Batas implementasi:** runtime dasar untuk discovery, validation, parsing, loading, orchestration abstraction, caching, dan reporting telah dibuat. Vendor-specific LLM integration, automatic skill-script execution, dependency installation, dan security sandbox belum disediakan. Lihat dokumentasi implementasi untuk detail dan batasan.
 
 ## Python Runtime
 
