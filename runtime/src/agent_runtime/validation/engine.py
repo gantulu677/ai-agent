@@ -5,6 +5,7 @@ import re
 from typing import Any
 
 from jsonschema import Draft202012Validator
+from jsonschema.exceptions import SchemaError
 
 from agent_runtime.discovery.agents import discover_agents
 from agent_runtime.discovery.instructions import discover_instructions
@@ -46,7 +47,7 @@ class ValidationEngine:
             errors = sorted(Draft202012Validator(schema).iter_errors(data), key=lambda e: list(e.path))
             for error in errors:
                 self._add(Severity.CRITICAL, "SCHEMA_VALIDATION", error.message, path, agent_id)
-        except (OSError, json.JSONDecodeError, ValueError) as exc:
+        except (OSError, json.JSONDecodeError, ValueError, SchemaError) as exc:
             self._add(Severity.CRITICAL, "INVALID_SCHEMA", str(exc), schema_path, agent_id)
 
     def validate(self) -> ValidationReport:
