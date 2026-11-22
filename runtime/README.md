@@ -43,7 +43,7 @@ Commands:
 
 The R-01–R-50 implementation cross-audit is documented in [docs/IMPLEMENTATION_AUDIT_R01-R50.md](../docs/IMPLEMENTATION_AUDIT_R01-R50.md).
 
-- R-15 is partial: severity levels exist and Critical rejection is implemented, but warning-producing validation conditions have not been specified/implemented.
-- R-41 is partial: external dependency declarations are read and inspected, but no formal dependency schema or full resolver is implemented.
+- R-15 passes: Critical, Warning, and Info severity handling is implemented; malformed dependency declarations and unavailable declared Python packages produce noncritical Warning findings.
+- R-41 passes: external dependency declarations support the approved package/python/tool/api/resource forms and are inspected without installing packages or making network requests. External availability resolution is intentionally outside this baseline.
 - No production LLM provider, automatic skill-script execution, dependency installation, or security sandbox is included.
 - Latest CI verification: run #59 passed all 35 tests and the Python compile check. Environment-specific security/performance benchmarks and provider integration remain separate production-readiness requirements.
