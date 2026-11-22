@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/gantulu677/ai-agent/blob/main/schemas/skill.schema.json",
+  "title": "Skill Configuration",
+  "description": "Required metadata for an agent-owned skill. Additional skill-specific properties are allowed.",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "description",
+    "version"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Non-empty skill identifier."
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Non-empty skill name."
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Non-empty description of the skill."
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Non-empty skill version."
+    }
+  },
+  "additionalProperties": true
+}
