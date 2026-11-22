@@ -10,9 +10,9 @@ def test_frontmatter_priority_overrides_numeric_prefix(tmp_path: Path):
     root = tmp_path / "instructions" / "core"
     root.mkdir(parents=True)
     (root / "99-later.md").write_text("---\npriority: 1\n---\nfirst")
-    (root / "01-earlier.md").write_text("second")
+    (root / "20-earlier.md").write_text("second")
     ordered = order_instructions(discover_instructions(tmp_path))
-    assert [x.path.name for x in ordered] == ["99-later.md", "01-earlier.md"]
+    assert [x.path.name for x in ordered] == ["99-later.md", "20-earlier.md"]
 
 
 def test_equal_priority_uses_numeric_prefix_then_path(tmp_path: Path):
