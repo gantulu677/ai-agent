@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+from agent_runtime.cache.manager import FileCache
 from agent_runtime.models import SkillConfig
 
 
@@ -16,11 +17,14 @@ class LoadedSkill:
     dependencies: Any
 
 
-def load_skill(skill_directory: Path) -> LoadedSkill:
+def load_skill(skill_directory: Path, cache: FileCache | None = None) -> LoadedSkill:
     config_path, instruction_path = skill_directory / "skill.json", skill_directory / "SKILL.md"
     if not config_path.is_file() or not instruction_path.is_file():
         raise FileNotFoundError("A skill requires both skill.json and SKILL.md")
-    raw = json.loads(config_path.read_text(encoding="utf-8"))
+    read = cache.get_or_load if cache else None
+    raw_text = read(config_path, lambda path: path.read_text(encoding="utf-8")) if read else config_path.read_text(encoding="utf-8")
+    instruction_text = read(instruction_path, lambda path: path.read_text(encoding="utf-8")) if read else instruction_path.read_text(encoding="utf-8")
+    raw = json.loads(raw_text)
     if not isinstance(raw, dict):
         raise ValueError("skill.json root must be an object")
     config = SkillConfig.from_mapping(raw)
@@ -28,4 +32,4 @@ def load_skill(skill_directory: Path) -> LoadedSkill:
         (path for path in skill_directory.iterdir() if path.is_dir() and not path.is_symlink()),
         key=lambda path: path.name,
     ))
-    return LoadedSkill(config, instruction_path.read_text(encoding="utf-8"), skill_directory, resources, raw.get("dependencies"))
+    return LoadedSkill(config, instruction_text, skill_directory, resources, raw.get("dependencies"))
