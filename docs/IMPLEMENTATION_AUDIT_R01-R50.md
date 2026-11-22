@@ -14,7 +14,7 @@
 | Partial | 2 |
 | Fail | 0 |
 
-**Important:** A Pass means the relevant code path exists and is covered by inspection or tests; it does not mean production deployment readiness. The complete 35-test suite has passed in GitHub Actions run #46 (31 tests) and the follow-up CI run for the latest audit changes is being triggered.
+**Important:** A Pass means the relevant code path exists and is covered by inspection or tests; it does not mean production deployment readiness. The complete 35-test suite passed in GitHub Actions run #59 (workflow run ID `45053402660`) for commit `6580a0c69d51fd922f93409346d01d11d911ae5d`; Python compile check also passed.
 
 ## Requirement-by-requirement matrix
 
@@ -84,7 +84,7 @@
 
 - **R-15:** define which noncritical conditions should produce Warning. No new rule is invented in this audit because the requirement specifies severity behavior but does not enumerate warning conditions.
 - **R-41:** if a future runtime needs to resolve/install/execute external dependencies, first approve a dependency declaration schema and execution/security policy. Current implementation is intentionally inspection-only.
-- GitHub Actions verification: run #46 (workflow run ID `45053181835`) on PR #1 commit `d485b9ec26e4839499bddd0ac8d507bc60147644` completed successfully: Python compile check passed and all 31 tests passed. The initial run exposed one faulty test fixture (escaped newline characters); the fixture was corrected and the rerun passed.
+- GitHub Actions verification: run #46 (workflow run ID `45053181835`) passed the initial 31-test baseline after correcting a faulty newline fixture. The final audit run #59 (workflow run ID `45053402660`) passed Python compile check and all 35 tests (`35 passed in 0.18s`).
 - Performance and security testing against real providers, external tools, and untrusted skills are outside this baseline audit.
 
 ## Final audit decision
