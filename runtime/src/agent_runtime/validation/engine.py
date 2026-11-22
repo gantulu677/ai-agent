@@ -122,7 +122,7 @@ class ValidationEngine:
                     self._add(Severity.CRITICAL, "DUPLICATE_SKILL_ID", "Skill ID must be unique within its owning agent.", skill.config_path, agent_id)
                 seen_skills.add(skill_config.id)
 
-                dependency_declarations = raw.get("dependencies")
+                dependency_declarations = skill_raw.get("dependencies")
                 for dependency in inspect_dependencies(dependency_declarations):
                     if not dependency.valid:
                         self._add(
