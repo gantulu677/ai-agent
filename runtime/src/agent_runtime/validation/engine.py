@@ -44,7 +44,7 @@ class ValidationEngine:
             return
         try:
             schema = json.loads(schema_path.read_text(encoding="utf-8"))
-            errors = sorted(Draft202012Validator(schema).iter_errors(data), key=lambda e: list(e.path))
+            errors = sorted(Draft202012Validator(schema).iter_errors(data), key=lambda e: tuple(str(part) for part in e.path))
             for error in errors:
                 self._add(Severity.CRITICAL, "SCHEMA_VALIDATION", error.message, path, agent_id)
         except (OSError, json.JSONDecodeError, ValueError, SchemaError) as exc:
@@ -70,7 +70,9 @@ class ValidationEngine:
             if not _ID_PATTERN.fullmatch(agent_id):
                 self._add(Severity.CRITICAL, "INVALID_AGENT_ID", "Agent ID must use lowercase kebab-case.", candidate.config_path, agent_id)
             if agent_id in seen_agents:
-                self._add(Severity.CRITICAL, "DUPLICATE_AGENT_ID", f"Agent ID duplicates {seen_agents[agent_id].as_posix()}.", candidate.config_path, agent_id)
+                previous_directory = seen_agents[agent_id]
+                self._add(Severity.CRITICAL, "DUPLICATE_AGENT_ID", f"Agent ID duplicates {previous_directory.as_posix()}; this agent is rejected.", candidate.config_path, agent_id)
+                self._add(Severity.CRITICAL, "DUPLICATE_AGENT_ID", f"Agent ID also duplicates {candidate.directory.as_posix()}; this agent is rejected.", previous_directory / "agent.json", agent_id)
             else:
                 seen_agents[agent_id] = candidate.directory
 
