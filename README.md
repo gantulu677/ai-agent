@@ -164,40 +164,14 @@ Schema JSON di `schemas/` menetapkan validasi dasar field wajib dan tipe data ko
 
 ## Python Runtime
 
-Python Runtime Architecture v1.0 is the approved implementation baseline. The current Phase 1–6 implementation, commands, and limitations are documented in [runtime/README.md](runtime/README.md) and [docs/IMPLEMENTATION_STATUS.md](docs/IMPLEMENTATION_STATUS.md).
+Python Runtime Architecture v1.0 is the approved implementation baseline. The implementation and known limitations are documented in [runtime/README.md](runtime/README.md), [Implementation Status](docs/IMPLEMENTATION_STATUS.md), and the [R-01–R-50 implementation audit](docs/IMPLEMENTATION_AUDIT_R01-R50.md).
 
-## Python Runtime Implementation
-
-The approved Python Runtime Architecture v1.0 has been implemented through the six planned phases.
-The implementation is in `runtime/src/agent_runtime/`; details and known limitations are documented in
-[Runtime README](runtime/README.md) and [Implementation Status](docs/IMPLEMENTATION_STATUS.md).
-
-### Available commands
-
-Install the package and development dependencies:
+Install and run from the repository root:
 
     python -m pip install -e ".[dev]"
-
-Inspect runtime capabilities and discovered agents:
-
     agent-runtime info
     agent-runtime discover
-
-Validate the repository and write JSON/Markdown reports:
-
     agent-runtime --root . validate
-
-Run the test suite:
-
     python -m pytest -q
 
-### Implementation scope
-
-- **Phase 1:** Python package, project configuration, internal data models, and CLI foundation.
-- **Phase 2:** automatic agent/skill/instruction discovery and per-agent/repository validation.
-- **Phase 3:** Markdown/TXT/JSON/YAML parsing, category and file ordering, agent loading, and on-demand skill loading.
-- **Phase 4:** isolated agent contexts and sessions, async LLM provider protocol, explicit tool registry, and orchestration.
-- **Phase 5:** process-local file cache, concurrent independent agent runs, and logging.
-- **Phase 6:** unit test suite, GitHub Actions workflow, and implementation documentation.
-
-**Important limitations:** no vendor-specific LLM provider, automatic skill-script execution, dependency installation, or security sandbox is included. The presence of CI configuration does not itself establish that a GitHub Actions run has passed. Requirement baseline R-01 through R-50 remains unchanged.
+The runtime has no bundled vendor-specific LLM client, automatic skill-script execution, dependency installation, or security sandbox. It is not certified production-ready until CI tests pass and the partial audit findings are resolved.
