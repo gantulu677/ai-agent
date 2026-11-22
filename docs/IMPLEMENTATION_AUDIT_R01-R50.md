@@ -66,7 +66,7 @@
 | R-44 | ID uniqueness | Pass | Agent IDs are checked repository-wide; skill IDs are checked within each agent. Duplicate agent IDs now mark both conflicting agents Critical. |
 | R-45 | Agent extension fields | Pass | Agent schema permits additional properties and `AgentConfig` preserves them. |
 | R-46 | Skill extension fields | Pass | Skill schema permits additional properties and `SkillConfig` preserves them. |
-| R-47 | Validation severity levels | Pass | `Severity` defines Critical, Warning, and Info. Operational Warning generation remains the R-15 partial item. |
+| R-47 | Validation severity levels | Pass | `Severity` defines Critical, Warning, and Info. Warning findings are generated for malformed dependency declarations and unavailable declared Python packages. |
 | R-48 | Per-agent and repository validation | Pass | Validation iterates each discovered agent and performs repository-wide uniqueness checks. |
 | R-49 | JSON and Markdown reports | Pass | `ValidationReport` serializes JSON and Markdown and writes both files. |
 | R-50 | Reject critical agent, continue peers | Pass | `RuntimeApplication.load_valid_agents` excludes agents with Critical findings while retaining valid peers. |
@@ -82,8 +82,7 @@
 
 ## Remaining audit gaps
 
-- **R-15:** define which noncritical conditions should produce Warning. No new rule is invented in this audit because the requirement specifies severity behavior but does not enumerate warning conditions.
-- **R-41:** if a future runtime needs to resolve/install/execute external dependencies, first approve a dependency declaration schema and execution/security policy. Current implementation is intentionally inspection-only.
+- **R-41 boundary:** external dependency declarations are validated and inspected only. Resolving external API/tool/resource availability, installing packages, or executing dependencies is intentionally outside the current implementation.
 - GitHub Actions verification: run #46 (workflow run ID `45053181835`) passed the initial 31-test baseline after correcting a faulty newline fixture. The final audit run #59 (workflow run ID `45053402660`) passed Python compile check and all 35 tests (`35 passed in 0.18s`).
 - Performance and security testing against real providers, external tools, and untrusted skills are outside this baseline audit.
 
