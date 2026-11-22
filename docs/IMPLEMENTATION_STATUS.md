@@ -16,6 +16,8 @@ Requirement baseline: R-01 through R-50, unchanged.
 
 ## Cross-audit
 
+Latest verification is tracked by the dedicated CI run associated with the final audit PR.
+
 See [Implementation Audit R-01–R-50](IMPLEMENTATION_AUDIT_R01-R50.md).
 
 - 48 requirements pass implementation inspection.
