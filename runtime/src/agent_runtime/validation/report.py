@@ -49,7 +49,7 @@ class ValidationReport:
         ]
         for item in self.issues:
             cells = [item.severity.value, item.code, item.agent_id or "-", item.path or "-", item.message]
-            lines.append("| " + " | ".join(str(v).replace("|", "\\|").replace("\\n", " ") for v in cells) + " |")
+            lines.append("| " + " | ".join(str(v).replace("|", "\\|").replace("\n", " ") for v in cells) + " |")
         if not self.issues:
             lines.append("| Info | NO_ISSUES | - | - | No validation issues found. |")
         return "\n".join(lines) + "\n"
