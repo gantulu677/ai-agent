@@ -46,4 +46,4 @@ The R-01–R-50 implementation cross-audit is documented in [docs/IMPLEMENTATION
 - R-15 is partial: severity levels exist and Critical rejection is implemented, but warning-producing validation conditions have not been specified/implemented.
 - R-41 is partial: external dependency declarations are read and inspected, but no formal dependency schema or full resolver is implemented.
 - No production LLM provider, automatic skill-script execution, dependency installation, or security sandbox is included.
-- Passing unit tests and environment-specific benchmarks must be confirmed before production use.
+- Passing the latest CI suite and environment-specific security/performance benchmarks must be confirmed before production use.
