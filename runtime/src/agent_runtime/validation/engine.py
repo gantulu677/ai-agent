@@ -60,13 +60,14 @@ class ValidationEngine:
             raw = self._load_json(candidate.config_path)
             if raw is None:
                 continue
-            self._schema_check(raw, "agent.schema.json", candidate.config_path, None)
             try:
                 config = AgentConfig.from_mapping(raw)
             except ValueError as exc:
                 self._add(Severity.CRITICAL, "AGENT_CONFIG_INVALID", str(exc), candidate.config_path)
+                self._schema_check(raw, "agent.schema.json", candidate.config_path, None)
                 continue
             agent_id = config.id
+            self._schema_check(raw, "agent.schema.json", candidate.config_path, agent_id)
             if not _ID_PATTERN.fullmatch(agent_id):
                 self._add(Severity.CRITICAL, "INVALID_AGENT_ID", "Agent ID must use lowercase kebab-case.", candidate.config_path, agent_id)
             if agent_id in seen_agents:
