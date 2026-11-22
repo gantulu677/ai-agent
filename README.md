@@ -2,6 +2,8 @@
 
 Repository ini menampung beberapa AI Agent yang dikelola sebagai unit independen. Setiap agent memiliki konfigurasi, instruksi, dan skill sendiri di dalam foldernya.
 
+Daftar keputusan requirement yang telah disetujui tersedia di [REQUIREMENTS.md](REQUIREMENTS.md).
+
 ## Prinsip arsitektur
 
 - Setiap AI Agent berada di direktori tersendiri di bawah `agents/`.
