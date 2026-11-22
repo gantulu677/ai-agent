@@ -174,4 +174,4 @@ Install and run from the repository root:
     agent-runtime --root . validate
     python -m pytest -q
 
-The runtime has no bundled vendor-specific LLM client, automatic skill-script execution, dependency installation, or security sandbox. It is not certified production-ready until CI tests pass and the partial audit findings are resolved.
+The latest recorded GitHub Actions verification (run #59) passed the Python compile check and all 35 tests. The runtime has no bundled vendor-specific LLM client, automatic skill-script execution, dependency installation, or security sandbox, and has not undergone deployment-specific security or performance benchmarking. It is therefore not certified production-ready; these are separate readiness gates, not unresolved R-01–R-50 audit findings.
