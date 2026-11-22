@@ -60,3 +60,19 @@ def test_orchestrator_can_run_independent_sessions_concurrently():
     results = asyncio.run(orchestrator.run_many(tasks))
     assert results == ["FIRST", "SECOND"]
     assert tasks[0][1].agent_id != tasks[1][1].agent_id
+
+
+def test_external_dependency_types_are_preserved_without_resolution():
+    statuses = inspect_dependencies([
+        {"name": "local-tool", "type": "tool"},
+        {"name": "service-endpoint", "type": "api"},
+        {"name": "prompt-template", "type": "resource"},
+    ])
+    assert [item.declared_type for item in statuses] == ["tool", "api", "resource"]
+    assert all(item.valid and item.available is None for item in statuses)
+
+
+def test_malformed_dependency_entry_is_marked_invalid():
+    status = inspect_dependencies([{"name": "missing-type"}])[0]
+    assert not status.valid
+    assert status.available is None
