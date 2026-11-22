@@ -39,7 +39,7 @@ def test_json_instruction_parses_as_structured_data(tmp_path: Path):
 def test_yaml_and_text_formats_are_loaded_as_content(tmp_path: Path):
     yaml_path = tmp_path / "policy.yaml"
     text_path = tmp_path / "notes.txt"
-    yaml_path.write_text("mode: strict\\n")
+    yaml_path.write_text("mode: strict\n")
     text_path.write_text("plain text")
     assert parse_instruction(yaml_path).content == {"mode": "strict"}
     assert parse_instruction(text_path).content == "plain text"
