@@ -11,7 +11,6 @@ def test_agent_config_preserves_extension_fields() -> None:
     config = AgentConfig.from_mapping(
         {"id": "sample-agent", "version": "1.0.0", "display_name": "Sample"}
     )
-
     assert config.id == "sample-agent"
     assert config.version == "1.0.0"
     assert config.extra_fields == {"display_name": "Sample"}
@@ -32,7 +31,6 @@ def test_skill_config_reads_required_fields_and_extensions() -> None:
             "enabled": True,
         }
     )
-
     assert config.id == "sample-skill"
     assert config.extra_fields == {"enabled": True}
 
@@ -47,7 +45,6 @@ def test_skill_config_requires_description() -> None:
 def test_cli_version(capsys: pytest.CaptureFixture[str]) -> None:
     with pytest.raises(SystemExit) as exc_info:
         main(["--version"])
-
     assert exc_info.value.code == 0
     assert __version__ in capsys.readouterr().out
 
@@ -55,5 +52,5 @@ def test_cli_version(capsys: pytest.CaptureFixture[str]) -> None:
 def test_cli_info(capsys: pytest.CaptureFixture[str]) -> None:
     assert main(["info"]) == 0
     output = capsys.readouterr().out
-    assert "Phase 1 - Runtime Foundation" in output
-    assert "not implemented yet" in output
+    assert "Phases 1-6" in output
+    assert "Automatic agent" in output
