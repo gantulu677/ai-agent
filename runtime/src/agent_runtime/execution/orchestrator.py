@@ -1,5 +1,6 @@
 """Async orchestration over an injected LLM provider."""
 import asyncio
+import json
 from collections.abc import Sequence
 
 from agent_runtime.execution.context import AgentContext
@@ -16,8 +17,13 @@ class AgentOrchestrator:
             raise ValueError("Session agent ID does not match execution context")
         if not session.history:
             for instruction in context.agent.instructions:
-                if isinstance(instruction.content, str) and instruction.content.strip():
-                    session.add_message("system", instruction.content)
+                content = instruction.content
+                if isinstance(content, str):
+                    system_content = content
+                else:
+                    system_content = json.dumps(content, ensure_ascii=False, indent=2)
+                if system_content.strip():
+                    session.add_message("system", f"[{instruction.source}]\n{system_content}")
         session.add_message("user", user_input)
         response = await self.provider.generate(messages=list(session.history), model=model)
         session.add_message("assistant", response)
@@ -28,9 +34,10 @@ class AgentOrchestrator:
         tasks: Sequence[tuple[AgentContext, AgentSession, str]],
         *,
         model: str | None = None,
-    ) -> list[str]:
-        """Run independent agent sessions concurrently; each retains its own context."""
-        return list(await asyncio.gather(*(
-            self.run(context, session, prompt, model=model)
-            for context, session, prompt in tasks
-        )))
+    ) -> list[str | BaseException]:
+        """Run independent sessions concurrently and return failures per task."""
+        results = await asyncio.gather(
+            *(self.run(context, session, prompt, model=model) for context, session, prompt in tasks),
+            return_exceptions=True,
+        )
+        return list(results)
