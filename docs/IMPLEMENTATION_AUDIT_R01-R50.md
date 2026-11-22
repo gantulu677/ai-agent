@@ -84,7 +84,7 @@
 
 - **R-15:** define which noncritical conditions should produce Warning. No new rule is invented in this audit because the requirement specifies severity behavior but does not enumerate warning conditions.
 - **R-41:** if a future runtime needs to resolve/install/execute external dependencies, first approve a dependency declaration schema and execution/security policy. Current implementation is intentionally inspection-only.
-- CI execution and full test results must be confirmed from GitHub Actions; repository presence of a workflow file is not evidence of a passing run.
+- GitHub Actions verification: run #46 (workflow run ID `45053181835`) on PR #1 commit `d485b9ec26e4839499bddd0ac8d507bc60147644` completed successfully: Python compile check passed and all 31 tests passed. The initial run exposed one faulty test fixture (escaped newline characters); the fixture was corrected and the rerun passed.
 - Performance and security testing against real providers, external tools, and untrusted skills are outside this baseline audit.
 
 ## Final audit decision
