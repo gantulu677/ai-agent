@@ -10,7 +10,7 @@ import yaml
 
 @dataclass(frozen=True, slots=True)
 class ParsedInstruction:
-    content: str | dict[str, Any] | list[Any]
+    content: Any
     metadata: dict[str, Any]
     format: str
 
@@ -34,8 +34,5 @@ def parse_instruction(path: Path) -> ParsedInstruction:
     if suffix == ".json":
         return ParsedInstruction(json.loads(text), {}, "json")
     if suffix == ".yaml":
-        value = yaml.safe_load(text)
-        if not isinstance(value, (dict, list)):
-            raise ValueError("YAML instruction root must be an object or array")
-        return ParsedInstruction(value, {}, "yaml")
+        return ParsedInstruction(yaml.safe_load(text), {}, "yaml")
     raise ValueError(f"Unsupported instruction format: {suffix}")
