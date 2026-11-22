@@ -1,5 +1,6 @@
 """Tool registry; discovered skill scripts are never executed implicitly."""
 import asyncio
+import inspect
 from collections.abc import Callable
 from typing import Any
 
@@ -16,5 +17,8 @@ class ToolExecutor:
     async def execute(self, name: str, **kwargs: Any) -> Any:
         if name not in self._tools:
             raise KeyError(f"Tool is not registered: {name}")
-        result = self._tools[name](**kwargs)
-        return await result if asyncio.iscoroutine(result) else result
+        function = self._tools[name]
+        if inspect.iscoroutinefunction(function):
+            return await function(**kwargs)
+        result = await asyncio.to_thread(function, **kwargs)
+        return await result if inspect.isawaitable(result) else result
