@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/gantulu677/ai-agent/blob/main/schemas/agent.schema.json",
+  "title": "Agent Configuration",
+  "description": "Minimum required fields for an independent agent configuration. Additional agent-specific properties are allowed.",
+  "type": "object",
+  "required": [
+    "id",
+    "version"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Non-empty agent identifier."
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Non-empty agent version."
+    }
+  },
+  "additionalProperties": true
+}
