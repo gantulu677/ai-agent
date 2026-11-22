@@ -164,34 +164,7 @@ Schema JSON di `schemas/` menetapkan validasi dasar field wajib dan tipe data ko
 
 ## Python Runtime
 
-Python Runtime Architecture v1.0 has been approved as the implementation baseline.
-The initial runtime foundation is located in runtime/ and is developed as an installable
-Python package.
-
-### Phase 1 — Runtime Foundation
-
-Phase 1 currently provides:
-
-- Python project configuration in pyproject.toml.
-- The agent_runtime package under runtime/src/.
-- Initial internal AgentConfig and SkillConfig data models.
-- A minimal agent-runtime CLI with --version and info commands.
-- Foundation tests under tests/unit/.
-
-Development setup:
-
-    python -m venv .venv
-    python -m pip install -e ".[dev]"
-    agent-runtime --version
-    agent-runtime info
-    python -m pytest
-
-Phase 1 does not yet implement agent discovery, instruction discovery or loading,
-skill discovery or loading, validation engine, dependency resolution, LLM providers,
-tool execution, or agent orchestration. Those capabilities belong to later phases.
-
-The approved requirement baseline R-01 through R-50 remains unchanged.
-See [runtime/README.md](runtime/README.md) for runtime development details.
+Python Runtime Architecture v1.0 is the approved implementation baseline. The current Phase 1–6 implementation, commands, and limitations are documented in [runtime/README.md](runtime/README.md) and [docs/IMPLEMENTATION_STATUS.md](docs/IMPLEMENTATION_STATUS.md).
 
 ## Python Runtime Implementation
 
