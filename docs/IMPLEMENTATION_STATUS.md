@@ -21,7 +21,7 @@ See [Implementation Audit R-01–R-50](IMPLEMENTATION_AUDIT_R01-R50.md).
 - 48 requirements pass implementation inspection.
 - 2 requirements are partial: R-15 (operational Warning generation) and R-41 (formal external dependency contract/resolution).
 - No requirement has been changed or added.
-- The current suite contains 31 test functions. This count is not a test result; only a successful CI run can establish that they pass.
+- The current suite contains 31 test functions. GitHub Actions run #46 (run ID `45053181835`) passed: `31 passed in 0.18s`, and the compile check passed.
 
 ## Commands
 
