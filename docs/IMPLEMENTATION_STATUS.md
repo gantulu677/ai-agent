@@ -1,28 +1,27 @@
 # Implementation Status
 
-Baseline: Python Runtime Architecture v1.0 (approved).
+Baseline: approved Python Runtime Architecture v1.0.
+Requirement baseline: R-01 through R-50, unchanged.
 
-The implementation is organized into six phases:
+## Phase status
 
 | Phase | Scope | Status |
 |---|---|---|
 | 1 | Runtime Foundation | Implemented |
-| 2 | Discovery & Validation | Implemented |
+| 2 | Discovery & Validation | Implemented with audit gaps |
 | 3 | Instruction & Skill Loading | Implemented |
-| 4 | Execution Engine | Implemented as provider/tool abstractions and async orchestration |
-| 5 | Performance & Reliability | Implemented baseline caching, concurrent orchestration, timing helper, and logging |
-| 6 | Testing & Documentation | Implemented test suite and CI workflow configuration |
+| 4 | Execution Engine | Provider/tool abstractions and async orchestration implemented |
+| 5 | Performance & Reliability | Baseline caching, concurrent orchestration, logging, timing helper implemented |
+| 6 | Testing & Documentation | Test suite, CI workflow configuration, and documentation committed; CI pass not yet verified |
 
-## Scope boundaries
+## Cross-audit
 
-- Requirements R-01 through R-50 remain the approved baseline and are not modified by this implementation.
-- Runtime does not include a vendor-specific LLM client.
-- Skill dependency inspection does not install or execute dependencies.
-- Skill scripts are not executed automatically.
-- A Python execution context is not a security sandbox.
-- CI configuration is committed; successful CI execution must be confirmed from GitHub Actions results rather than inferred from the presence of the workflow file.
-- Tests have been added, but no successful CI run has yet been confirmed.
-- Production readiness and performance improvements require environment-specific testing and benchmarking.
+See [Implementation Audit R-01–R-50](IMPLEMENTATION_AUDIT_R01-R50.md).
+
+- 48 requirements pass implementation inspection.
+- 2 requirements are partial: R-15 (operational Warning generation) and R-41 (formal external dependency contract/resolution).
+- No requirement has been changed or added.
+- The current suite contains 31 test functions. This count is not a test result; only a successful CI run can establish that they pass.
 
 ## Commands
 
@@ -31,3 +30,10 @@ The implementation is organized into six phases:
     agent-runtime discover
     agent-runtime --root . validate
     python -m pytest -q
+
+## Readiness gate
+
+Runtime is not certified production-ready until:
+1. GitHub Actions reports a successful test run for the audited commit.
+2. R-15 warning behavior and R-41 dependency contract are implemented or explicitly accepted as scoped limitations.
+3. Provider integration, security boundaries, and deployment performance are tested for the intended environment.
