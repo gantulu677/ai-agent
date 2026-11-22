@@ -22,8 +22,9 @@ def category_order(categories: Iterable[str], configured: list[str] | None = Non
 
 def _file_key(candidate: InstructionCandidate) -> tuple:
     parsed = parse_instruction(candidate.path)
-    priority = parsed.metadata.get("priority") if parsed.format == "markdown" else None
-    if priority is not None and (isinstance(priority, bool) or not isinstance(priority, int) or priority < 1):
+    has_priority = parsed.format == "markdown" and "priority" in parsed.metadata
+    priority = parsed.metadata.get("priority") if has_priority else None
+    if has_priority and (isinstance(priority, bool) or not isinstance(priority, int) or priority < 1):
         raise ValueError(f"Invalid priority in {candidate.relative_path}: expected a positive integer")
     match = _NUMERIC_PREFIX.match(candidate.path.name)
     numeric = int(match.group(1)) if match else None
