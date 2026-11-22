@@ -7,6 +7,7 @@ from typing import Any
 from jsonschema import Draft202012Validator
 from jsonschema.exceptions import SchemaError
 
+from agent_runtime.dependencies import inspect_dependencies
 from agent_runtime.discovery.agents import discover_agents
 from agent_runtime.discovery.instructions import discover_instructions
 from agent_runtime.discovery.skills import discover_skills
@@ -120,4 +121,23 @@ class ValidationEngine:
                 if skill_config.id in seen_skills:
                     self._add(Severity.CRITICAL, "DUPLICATE_SKILL_ID", "Skill ID must be unique within its owning agent.", skill.config_path, agent_id)
                 seen_skills.add(skill_config.id)
+
+                dependency_declarations = raw.get("dependencies")
+                for dependency in inspect_dependencies(dependency_declarations):
+                    if not dependency.valid:
+                        self._add(
+                            Severity.WARNING,
+                            "INVALID_SKILL_DEPENDENCY_DECLARATION",
+                            dependency.detail,
+                            skill.config_path,
+                            agent_id,
+                        )
+                    elif dependency.available is False:
+                        self._add(
+                            Severity.WARNING,
+                            "SKILL_DEPENDENCY_UNAVAILABLE",
+                            dependency.detail,
+                            skill.config_path,
+                            agent_id,
+                        )
         return ValidationReport(self.issues)
