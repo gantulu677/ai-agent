@@ -192,3 +192,39 @@ tool execution, or agent orchestration. Those capabilities belong to later phase
 
 The approved requirement baseline R-01 through R-50 remains unchanged.
 See [runtime/README.md](runtime/README.md) for runtime development details.
+
+## Python Runtime Implementation
+
+The approved Python Runtime Architecture v1.0 has been implemented through the six planned phases.
+The implementation is in `runtime/src/agent_runtime/`; details and known limitations are documented in
+[Runtime README](runtime/README.md) and [Implementation Status](docs/IMPLEMENTATION_STATUS.md).
+
+### Available commands
+
+Install the package and development dependencies:
+
+    python -m pip install -e ".[dev]"
+
+Inspect runtime capabilities and discovered agents:
+
+    agent-runtime info
+    agent-runtime discover
+
+Validate the repository and write JSON/Markdown reports:
+
+    agent-runtime --root . validate
+
+Run the test suite:
+
+    python -m pytest -q
+
+### Implementation scope
+
+- **Phase 1:** Python package, project configuration, internal data models, and CLI foundation.
+- **Phase 2:** automatic agent/skill/instruction discovery and per-agent/repository validation.
+- **Phase 3:** Markdown/TXT/JSON/YAML parsing, category and file ordering, agent loading, and on-demand skill loading.
+- **Phase 4:** isolated agent contexts and sessions, async LLM provider protocol, explicit tool registry, and orchestration.
+- **Phase 5:** process-local file cache, concurrent independent agent runs, and logging.
+- **Phase 6:** unit test suite, GitHub Actions workflow, and implementation documentation.
+
+**Important limitations:** no vendor-specific LLM provider, automatic skill-script execution, dependency installation, or security sandbox is included. The presence of CI configuration does not itself establish that a GitHub Actions run has passed. Requirement baseline R-01 through R-50 remains unchanged.
