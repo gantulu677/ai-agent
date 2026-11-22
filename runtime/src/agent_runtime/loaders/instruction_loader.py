@@ -14,7 +14,7 @@ class LoadedInstruction:
     source: str
     category: str
     format: str
-    content: str | dict[str, Any] | list[Any]
+    content: Any
     metadata: dict[str, Any]
 
 
