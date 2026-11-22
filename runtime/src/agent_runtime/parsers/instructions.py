@@ -21,7 +21,7 @@ def parse_instruction(path: Path) -> ParsedInstruction:
     if suffix == ".md":
         metadata: dict[str, Any] = {}
         body = text
-        match = re.match(r"^---\\s*\\n(.*?)\\n---\\s*(?:\\n|$)", text, flags=re.DOTALL)
+        match = re.match(r"^---\s*\n(.*?)\n---\s*(?:\n|$)", text, flags=re.DOTALL)
         if match:
             parsed = yaml.safe_load(match.group(1)) or {}
             if not isinstance(parsed, dict):
