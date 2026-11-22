@@ -7,8 +7,11 @@ from typing import Any
 from jsonschema import Draft202012Validator
 
 from agent_runtime.discovery.agents import discover_agents
+from agent_runtime.discovery.instructions import discover_instructions
 from agent_runtime.discovery.skills import discover_skills
 from agent_runtime.models import AgentConfig, SkillConfig
+from agent_runtime.ordering.instructions import order_instructions
+from agent_runtime.parsers.instructions import parse_instruction
 from agent_runtime.validation.report import Severity, ValidationIssue, ValidationReport
 
 _ID_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
@@ -16,7 +19,7 @@ _ID_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 
 class ValidationEngine:
     def __init__(self, repository_root: Path):
-        self.root = repository_root
+        self.root = repository_root.resolve()
         self.issues: list[ValidationIssue] = []
 
     def _add(self, severity: Severity, code: str, message: str, path: Path | None = None, agent_id: str | None = None) -> None:
@@ -69,6 +72,30 @@ class ValidationEngine:
                 self._add(Severity.CRITICAL, "DUPLICATE_AGENT_ID", f"Agent ID duplicates {seen_agents[agent_id].as_posix()}.", candidate.config_path, agent_id)
             else:
                 seen_agents[agent_id] = candidate.directory
+
+            configured_categories = raw.get("instruction_category_order")
+            if configured_categories is not None and (
+                not isinstance(configured_categories, list)
+                or not all(isinstance(value, str) for value in configured_categories)
+            ):
+                self._add(Severity.CRITICAL, "INVALID_CATEGORY_ORDER", "instruction_category_order must be an array of strings.", candidate.config_path, agent_id)
+                configured_categories = None
+
+            instruction_candidates = discover_instructions(candidate.directory)
+            for instruction in instruction_candidates:
+                try:
+                    parsed = parse_instruction(instruction.path)
+                    if parsed.format == "markdown" and "priority" in parsed.metadata:
+                        priority = parsed.metadata["priority"]
+                        if isinstance(priority, bool) or not isinstance(priority, int) or priority < 1:
+                            raise ValueError("priority must be a positive integer")
+                except Exception as exc:
+                    self._add(Severity.CRITICAL, "INSTRUCTION_PARSE_ERROR", str(exc), instruction.path, agent_id)
+            try:
+                order_instructions(instruction_candidates, configured_categories)
+            except Exception as exc:
+                self._add(Severity.CRITICAL, "INSTRUCTION_ORDER_ERROR", str(exc), candidate.directory / "instructions", agent_id)
+
             seen_skills: set[str] = set()
             for skill in discover_skills(candidate.directory):
                 skill_raw = self._load_json(skill.config_path, agent_id) if skill.config_path.is_file() else None
