@@ -66,3 +66,33 @@ def test_missing_skill_instruction_is_critical(tmp_path: Path):
     }))
     report = ValidationEngine(tmp_path).validate()
     assert any(issue.code == "SKILL_INSTRUCTIONS_MISSING" for issue in report.issues)
+
+
+def test_unavailable_skill_dependency_is_warning_not_critical(tmp_path: Path):
+    make_repo(tmp_path)
+    skill = tmp_path / "agents" / "alpha" / "skills" / "with-dependency"
+    skill.mkdir(parents=True)
+    (skill / "skill.json").write_text(json.dumps({
+        "id": "with-dependency", "name": "Dependency", "description": "Test", "version": "1",
+        "dependencies": [{"name": "definitely_missing_agent_runtime_dependency_abc", "type": "package"}],
+    }))
+    (skill / "SKILL.md").write_text("Use the declared dependency when needed.")
+    report = ValidationEngine(tmp_path).validate()
+    warnings = [issue for issue in report.issues if issue.code == "SKILL_DEPENDENCY_UNAVAILABLE"]
+    assert len(warnings) == 1
+    assert warnings[0].severity == Severity.WARNING
+    assert not report.has_critical
+
+
+def test_malformed_dependency_declaration_is_warning(tmp_path: Path):
+    make_repo(tmp_path)
+    skill = tmp_path / "agents" / "alpha" / "skills" / "bad-dependency"
+    skill.mkdir(parents=True)
+    (skill / "skill.json").write_text(json.dumps({
+        "id": "bad-dependency", "name": "Bad Dependency", "description": "Test", "version": "1",
+        "dependencies": [{"name": "missing-type"}],
+    }))
+    (skill / "SKILL.md").write_text("No script execution.")
+    report = ValidationEngine(tmp_path).validate()
+    assert any(issue.code == "INVALID_SKILL_DEPENDENCY_DECLARATION" and issue.severity == Severity.WARNING for issue in report.issues)
+    assert not report.has_critical
